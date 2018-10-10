@@ -17,6 +17,7 @@ mongoose.connect('mongodb://root:password123@ds125713.mlab.com:25713/ecommerce-j
 
 // Show in a console all HTTP request inside the terminal
 app.use(morgan('dev'))
+app.use(express.static(__dirname + '/public'))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
@@ -34,7 +35,7 @@ app.post('/create-user', (req, res, next) => {
 	})
 })
 
-app.listen(3000, err => {
+app.listen(3001, err => {
 	if (err) {
 		throw err
 	}

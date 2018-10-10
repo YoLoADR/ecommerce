@@ -2,11 +2,13 @@ const express = require('express')
 const morgan = require('morgan')
 const mongoose = require('mongoose')
 const bodyParser = require('body-parser')
+const next = require('next')
 
-const User = require('./models/user')
+const userRoutes = require('./routes/user')
+const dev = process.env.NODE_ENV !== 'production'
+const app = next({ dev })
+const handle = app.getRequestHandler()
 
-const app = express()
-// password123
 mongoose.connect('mongodb://root:password123@ds125713.mlab.com:25713/ecommerce-js', err => {
 	if (err) {
 		console.log('erreur', err)
@@ -15,29 +17,27 @@ mongoose.connect('mongodb://root:password123@ds125713.mlab.com:25713/ecommerce-j
 	}
 })
 
-// Show in a console all HTTP request inside the terminal
-app.use(morgan('dev'))
-app.use(express.static(__dirname + '/public'))
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({ extended: true }))
+app
+	.prepare()
+	.then(() => {
+		const server = express()
 
-app.post('/create-user', (req, res, next) => {
-	const user = new User()
-	user.profile.name = req.body.name
-	user.password = req.body.password
-	user.email = req.body.email
-	console.log('user', user)
-	user.save(err => {
-		if (err) {
-			return next(err)
-		}
-		res.json('Successfuly created a new User')
+		server.use(morgan('dev'))
+		server.use(express.static(__dirname + '/public'))
+		server.use(bodyParser.json())
+		server.use(bodyParser.urlencoded({ extended: true }))
+		userRoutes(server)
+
+		server.get('*', (req, res) => {
+			return handle(req, res)
+		})
+
+		server.listen(3000, err => {
+			if (err) throw err
+			console.log('> Ready on http://localhost:3000')
+		})
 	})
-})
-
-app.listen(3001, err => {
-	if (err) {
-		throw err
-	}
-	console.log('Server is running on PORT 3000')
-})
+	.catch(ex => {
+		console.error(ex.stack)
+		process.exit(1)
+	})

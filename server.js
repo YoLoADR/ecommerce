@@ -40,9 +40,9 @@ app
 		server.use(cookieParser())
 
 		// (!) Je pense que l'erreur vient de là car Front et le Client de doivent pas être lié dans mon cas
-		server.get('/signup', (req, res) => {
-			return app.render(req, res, '/signup', req.query)
-		})
+		// server.get('/signup', (req, res) => {
+		// 	return app.render(req, res, '/signup', req.query)
+		// })
 
 		server.post('/signup', AuthentificationController.signup)
 		server.post('/signin', requireValidCredentials, AuthentificationController.signin)

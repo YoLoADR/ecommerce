@@ -14,8 +14,9 @@ const dev = process.env.NODE_ENV !== 'production'
 const app = next({ dev })
 const handle = app.getRequestHandler()
 
-const User = require('./models/user')
+const AuthentificationController = require('./controllers/authentification')
 //start project : nodemon server.js
+// (?) http
 
 mongoose.connect('mongodb://root:password123@ds125713.mlab.com:25713/ecommerce-js', err => {
 	if (err) {
@@ -32,7 +33,7 @@ app
 
 		server.use(morgan('dev'))
 		server.use(express.static(__dirname + '/public'))
-		server.use(bodyParser.json())
+		server.use(bodyParser.json({ type: '*/*' }))
 		server.use(bodyParser.urlencoded({ extended: true }))
 		server.use(cookieParser())
 		server.use(
@@ -49,24 +50,7 @@ app
 			return app.render(req, res, '/signup', req.query)
 		})
 
-		server.get('/signup', function(req, res, next) {
-			User.findOne({ email: req.body.email }, function(err, existingUser) {
-				if (existingUser) {
-					//req.flash('errors', 'Account with that email address already exist')
-					console.log('ERREUR existingUser', req.flash('errors'))
-					const queryParams = { title: 'Account with that email address already exist' }
-					return app.render(req, res, '/signup', queryParams)
-				} else {
-					user.save(function(err, user) {
-						if (err) {
-							return next(err)
-						}
-						return app.render(req, res, '/signup', user)
-					})
-				}
-			})
-		})
-		//userRoutes(server)
+		server.post('/signup', AuthentificationController.signup)
 
 		server.get('*', (req, res) => {
 			return handle(req, res)

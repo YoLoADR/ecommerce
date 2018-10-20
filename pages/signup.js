@@ -1,43 +1,11 @@
 import { Component } from 'react'
+import { Field, reduxForm } from 'redux-form'
 import Navigation from './containers/_layout/navigation'
 import { Container, Row, Col, Button, Form, FormGroup, Label, Input, Alert } from 'reactstrap'
 import 'bootstrap/dist/css/bootstrap.css'
-import Error from 'next/error'
-import axios from 'axios'
 
 export default class Signup extends Component {
-	constructor(props) {
-		super(props)
-		this.handleSubmit = this.handleSubmit.bind(this)
-		// this.state = {
-		// 	name: '',
-		// 	email: '',
-		// 	password: ''
-		// }
-	}
-
-	componentDidMount() {
-		this.fetchData()
-	}
-
-	fetchData() {
-		axios.get('http://localhost:3000/signup').then(
-			response => {
-				console.log('response', response)
-			},
-			err => {
-				console.log('err', err)
-			}
-		)
-	}
-
-	handleSubmit() {
-		//event.stopPropagation()
-		event.preventDefault()
-		console.log('props', this.props)
-		//console.log('state', this.state)
-		//console.log('event', event)
-	}
+	constructor(props) {}
 
 	render() {
 		return (

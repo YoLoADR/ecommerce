@@ -18,7 +18,7 @@ var UserSchema = new mongoose.Schema({
 })
 
 UserSchema.pre('save', function(next) {
-	var user = this
+	const user = this
 	if (!user.isModified('password')) return next()
 	bcrypt.genSalt(10, function(err, salt) {
 		if (err) {
@@ -32,8 +32,17 @@ UserSchema.pre('save', function(next) {
 	})
 })
 
-UserSchema.methods.comparePassword = function(password) {
-	return bcrypt.compareSync(password, this.password)
+// UserSchema.methods : permet d'accrocher une methode à notre Schema
+UserSchema.methods.comparePassword = function(password, done) {
+	bcrypt.compare(password, this.password, function(err, isMatch) {
+		if (err) {
+			return done(err)
+		}
+
+		done(null, isMatch)
+	})
 }
 
-module.exports = mongoose.model('User', UserSchema)
+const UserModel = mongoose.model('user', UserSchema)
+
+module.exports = UserModel
